@@ -21,7 +21,7 @@ public class FilmControllerTests {
     @BeforeEach
     public void init() {
         filmController = new FilmController();
-        film = new Film (null, "Исходный код", "Солдат по имени Коултер мистическим образом " +
+        film = new Film(null, "Исходный код", "Солдат по имени Коултер мистическим образом " +
                 "оказывается в теле неизвестного мужчины, погибшего в железнодорожной катастрофе.",
                 LocalDate.of(2011, 3, 31), 93);
     }
