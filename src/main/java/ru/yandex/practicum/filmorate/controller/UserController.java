@@ -49,7 +49,7 @@ public class UserController {
     }
 
     @PutMapping
-    public User update (@Valid @RequestBody User newUserInfo) {
+    public User update(@Valid @RequestBody User newUserInfo) {
         if (newUserInfo.getId() == null) {
             log.error("Не указан ID пользователя.");
             throw new ValidationException("Не указан ID пользователя");
@@ -58,8 +58,8 @@ public class UserController {
             if (newUserInfo.getEmail() != null) {
                 if (!(newUserInfo.getEmail().contains("@"))) {
                     log.error("Электронная почта недействительна.");
-                    throw new ValidationException("Электронная почта должна содержать символ @");}
-                else {
+                    throw new ValidationException("Электронная почта должна содержать символ @");
+                } else {
                     log.info("Новый имейл присвоен.");
                     oldUserInfo.setEmail(newUserInfo.getEmail());
                 }
