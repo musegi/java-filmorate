@@ -84,7 +84,8 @@ public class FilmController {
             if (newFilmInfo.getName() != null) {
                 log.info("Присвоено новое название фильма.");
                 oldFilmInfo.setName(newFilmInfo.getName());
-            } return oldFilmInfo;
+            }
+            return oldFilmInfo;
         } else {
             log.error("Не найден фильм с ID{}", newFilmInfo.getId());
             throw new ValidationException("Фильм с ID " + newFilmInfo.getId() + " не найден.");
