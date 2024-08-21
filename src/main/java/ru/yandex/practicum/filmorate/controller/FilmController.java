@@ -51,7 +51,8 @@ public class FilmController {
         if (newFilmInfo.getId() == null) {
             log.error("Не указан ID фильма.");
             throw new ValidationException("Не указан ID фильма");
-        } if (films.containsKey(newFilmInfo.getId())) {
+        }
+        if (films.containsKey(newFilmInfo.getId())) {
             Film oldFilmInfo = films.get(newFilmInfo.getId());
             if (newFilmInfo.getDescription() != null) {
                 if (newFilmInfo.getDescription().length() > 200) {
@@ -61,7 +62,8 @@ public class FilmController {
                     log.info("Новое описание присвоено.");
                     oldFilmInfo.setDescription(newFilmInfo.getDescription());
                 }
-            } if (newFilmInfo.getReleaseDate() != null) {
+            }
+            if (newFilmInfo.getReleaseDate() != null) {
                 if (newFilmInfo.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
                     log.error("Указана неверная новая дата релиза фильма.");
                     throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1985 года.");
@@ -69,7 +71,8 @@ public class FilmController {
                     log.info("Присвоена новая дата релиза.");
                     oldFilmInfo.setReleaseDate(newFilmInfo.getReleaseDate());
                 }
-            } if (newFilmInfo.getDuration() != null) {
+            }
+            if (newFilmInfo.getDuration() != null) {
                 if (newFilmInfo.getDuration() <= 0) {
                     log.error("Указана отрицательная новая продолжительность фильма.");
                     throw new ValidationException("Продолжительность фильма должна быть положительным числом.");
@@ -77,7 +80,8 @@ public class FilmController {
                     log.info("Присвоена новая длительность фильма.");
                     oldFilmInfo.setDuration(newFilmInfo.getDuration());
                 }
-            } if (newFilmInfo.getName() != null) {
+            }
+            if (newFilmInfo.getName() != null) {
                 log.info("Присвоено новое название фильма.");
                 oldFilmInfo.setName(newFilmInfo.getName());
             } return oldFilmInfo;

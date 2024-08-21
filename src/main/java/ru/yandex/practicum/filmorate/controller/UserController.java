@@ -36,7 +36,8 @@ public class UserController {
         } else if (user.getBirthday().isAfter(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")))) {
             log.error("Указана неверная дата рождения.");
             throw new ValidationException("Дата рождения не может быть в будущем.");
-        } if (user.getName() == null || user.getName().isBlank()) {
+        }
+        if (user.getName() == null || user.getName().isBlank()) {
             log.info("Имя пользователя не было указано");
             user.setName(user.getLogin());
         }
@@ -62,17 +63,20 @@ public class UserController {
                     log.info("Новый имейл присвоен.");
                     oldUserInfo.setEmail(newUserInfo.getEmail());
                 }
-            } if (newUserInfo.getName() != null) {
+            }
+            if (newUserInfo.getName() != null) {
                 log.info("Новое имя присвоено.");
                 oldUserInfo.setName(newUserInfo.getName());
-            } if (newUserInfo.getLogin() != null) {
+            }
+            if (newUserInfo.getLogin() != null) {
                 if (newUserInfo.getLogin().contains(" ")) {
                     log.error("Новый логин содержит пробелы.");
                     throw new ValidationException("Логин не может содержать пробелы.");
                 }
                 log.info("Новый логин присвоен.");
                 oldUserInfo.setLogin(newUserInfo.getLogin());
-            } if (newUserInfo.getBirthday() != null) {
+            }
+            if (newUserInfo.getBirthday() != null) {
                 if (newUserInfo.getBirthday().isAfter(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")))) {
                     log.error("Указана неверная новая дата рождения.");
                     throw new ValidationException("Дата рождения не может быть в будущем.");
