@@ -45,7 +45,8 @@ public class UserControllerTests {
         user.setBirthday(LocalDate.of(2150, 10, 13));
         user.setId(1L);
         ValidationException thrown = assertThrows(ValidationException.class, () -> userController.create(user));
-        Assertions.assertEquals("Дата рождения не может быть в будущем.", thrown.getMessage());
+        Assertions.assertEquals("Дата рождения должна быть указана и не может быть в будущем.",
+                thrown.getMessage());
     }
 
     @Test

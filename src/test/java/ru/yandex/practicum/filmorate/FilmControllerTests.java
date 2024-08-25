@@ -39,14 +39,15 @@ public class FilmControllerTests {
                 "погибшего в железнодорожной катастрофе. Коултер вынужден переживать чужую смерть снова и снова" +
                 " до тех пор, пока не поймет, кто – зачинщик катастрофы.");
         ValidationException thrown = assertThrows(ValidationException.class, () -> filmController.createFilm(film));
-        Assertions.assertEquals("Описание фильма не может быть длиннее 200 символов.", thrown.getMessage());
+        Assertions.assertEquals("Описание фильма должно быть указано и не может быть длиннее 200 символов.",
+                thrown.getMessage());
     }
 
     @Test
     public void testCreateNegativeDurationFilm() {
         film.setDuration(-54);
         ValidationException thrown = assertThrows(ValidationException.class, () -> filmController.createFilm(film));
-        Assertions.assertEquals("Продолжительность фильма должна быть положительным числом.",
+        Assertions.assertEquals("Продолжительность фильма должна быть указана и являться положительным числом.",
                 thrown.getMessage());
     }
 
