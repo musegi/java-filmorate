@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class UserController {
 
     @GetMapping
     public Collection<User> getUsers() {
-        return users.values();
+        return new ArrayList<>(users.values());
     }
 
     @PostMapping
@@ -33,9 +34,10 @@ public class UserController {
         } else if (user.getLogin() == null || user.getLogin().isBlank() || (user.getLogin().contains(" "))) {
             log.error("Логин содержит пробелы или не был указан.");
             throw new ValidationException("Логин не может быть пустым или содержать пробелы.");
-        } else if (user.getBirthday().isAfter(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")))) {
-            log.error("Указана неверная дата рождения.");
-            throw new ValidationException("Дата рождения не может быть в будущем.");
+        } else if (user.getBirthday() == null || user.getBirthday().isAfter(LocalDate.ofInstant(Instant.now(),
+                ZoneId.of("UTC")))) {
+            log.error("Дата рождения неверная или не была указана.");
+            throw new ValidationException("Дата рождения должна быть указана и не может быть в будущем.");
         }
         if (user.getName() == null || user.getName().isBlank()) {
             log.info("Имя пользователя не было указано");
@@ -53,42 +55,42 @@ public class UserController {
         if (newUserInfo.getId() == null) {
             log.error("Не указан ID пользователя.");
             throw new ValidationException("Не указан ID пользователя");
-        } else if (users.containsKey(newUserInfo.getId())) {
-            User oldUserInfo = users.get(newUserInfo.getId());
-            if (newUserInfo.getEmail() != null) {
-                if (!(newUserInfo.getEmail().contains("@"))) {
-                    log.error("Электронная почта недействительна.");
-                    throw new ValidationException("Электронная почта должна содержать символ @");
-                } else {
-                    log.info("Новый имейл присвоен.");
-                    oldUserInfo.setEmail(newUserInfo.getEmail());
-                }
-            }
-            if (newUserInfo.getName() != null) {
-                log.info("Новое имя присвоено.");
-                oldUserInfo.setName(newUserInfo.getName());
-            }
-            if (newUserInfo.getLogin() != null) {
-                if (newUserInfo.getLogin().contains(" ")) {
-                    log.error("Новый логин содержит пробелы.");
-                    throw new ValidationException("Логин не может содержать пробелы.");
-                }
-                log.info("Новый логин присвоен.");
-                oldUserInfo.setLogin(newUserInfo.getLogin());
-            }
-            if (newUserInfo.getBirthday() != null) {
-                if (newUserInfo.getBirthday().isAfter(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")))) {
-                    log.error("Указана неверная новая дата рождения.");
-                    throw new ValidationException("Дата рождения не может быть в будущем.");
-                }
-                log.info("Новая дата рождения присвоена.");
-                oldUserInfo.setBirthday(newUserInfo.getBirthday());
-            }
-            return oldUserInfo;
-        } else {
+        }
+        if (!users.containsKey(newUserInfo.getId())) {
             log.error("Не найден пользовать с ID{}", newUserInfo.getId());
             throw new ValidationException("Пользователь с ID " + newUserInfo.getId() + " не найден.");
         }
+        User oldUserInfo = users.get(newUserInfo.getId());
+        if (newUserInfo.getEmail() != null) {
+            if (!(newUserInfo.getEmail().contains("@"))) {
+                log.error("Электронная почта недействительна.");
+                throw new ValidationException("Электронная почта должна содержать символ @");
+            } else {
+                log.info("Новый имейл присвоен.");
+                oldUserInfo.setEmail(newUserInfo.getEmail());
+            }
+        }
+        if (newUserInfo.getName() != null) {
+            log.info("Новое имя присвоено.");
+            oldUserInfo.setName(newUserInfo.getName());
+        }
+        if (newUserInfo.getLogin() != null) {
+            if (newUserInfo.getLogin().contains(" ")) {
+                log.error("Новый логин содержит пробелы.");
+                throw new ValidationException("Логин не может содержать пробелы.");
+            }
+            log.info("Новый логин присвоен.");
+            oldUserInfo.setLogin(newUserInfo.getLogin());
+        }
+        if (newUserInfo.getBirthday() != null) {
+            if (newUserInfo.getBirthday().isAfter(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")))) {
+                log.error("Указана неверная новая дата рождения.");
+                throw new ValidationException("Дата рождения не может быть в будущем.");
+            }
+            log.info("Новая дата рождения присвоена.");
+            oldUserInfo.setBirthday(newUserInfo.getBirthday());
+        }
+        return oldUserInfo;
     }
 
     private long getNextId() {
