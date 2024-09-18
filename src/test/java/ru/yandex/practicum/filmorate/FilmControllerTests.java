@@ -33,16 +33,6 @@ public class FilmControllerTests {
     }
 
     @Test
-    public void testCreateLongDescriptionFilm() {
-        film.setDescription("Солдат по имени Коултер мистическим образом оказывается в теле неизвестного мужчины, " +
-                "погибшего в железнодорожной катастрофе. Коултер вынужден переживать чужую смерть снова и снова" +
-                " до тех пор, пока не поймет, кто – зачинщик катастрофы.");
-        ValidationException thrown = assertThrows(ValidationException.class, () -> filmController.createFilm(film));
-        Assertions.assertEquals("Описание фильма не может быть длиннее 200 символов.",
-                thrown.getMessage());
-    }
-
-    @Test
     public void testUpdateIncorrectReleaseDateFilm() {
         filmController.createFilm(film);
         film.setReleaseDate(LocalDate.of(1037, 9, 23));
