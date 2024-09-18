@@ -30,7 +30,7 @@ public class Film {
         likes.add(id);
     }
 
-    public void removeLike (Long id) {
+    public void removeLike(Long id) {
         likes.remove(id);
     }
 }
