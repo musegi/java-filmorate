@@ -38,7 +38,7 @@ public class UserService {
         return userChecked;
     }
 
-    public User updateUser (User newUser) {
+    public User updateUser(User newUser) {
         userContainCheck(newUser.getId());
         User oldUser = userStorage.getUser(newUser.getId());
         userLoginPatternCheck(newUser);
