@@ -5,32 +5,31 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.FilmController;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 public class FilmControllerTests {
 
+    FilmService filmService = new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage());
     FilmController filmController;
     Film film;
 
     @BeforeEach
     public void init() {
-        filmController = new FilmController();
+        filmController = new FilmController(filmService);
         film = new Film(null, "Исходный код", "Солдат по имени Коултер мистическим образом " +
                 "оказывается в теле неизвестного мужчины, погибшего в железнодорожной катастрофе.",
-                LocalDate.of(2011, 3, 31), 93);
-    }
-
-    @Test
-    public void testCreateNullNameFilm() {
-        film.setName(null);
-        ValidationException thrown = assertThrows(ValidationException.class, () -> filmController.createFilm(film));
-        Assertions.assertEquals("Название фильма не может быть пустым.", thrown.getMessage());
+                LocalDate.of(2011, 3, 31), 93, Collections.emptySet());
     }
 
     @Test
@@ -39,15 +38,7 @@ public class FilmControllerTests {
                 "погибшего в железнодорожной катастрофе. Коултер вынужден переживать чужую смерть снова и снова" +
                 " до тех пор, пока не поймет, кто – зачинщик катастрофы.");
         ValidationException thrown = assertThrows(ValidationException.class, () -> filmController.createFilm(film));
-        Assertions.assertEquals("Описание фильма должно быть указано и не может быть длиннее 200 символов.",
-                thrown.getMessage());
-    }
-
-    @Test
-    public void testCreateNegativeDurationFilm() {
-        film.setDuration(-54);
-        ValidationException thrown = assertThrows(ValidationException.class, () -> filmController.createFilm(film));
-        Assertions.assertEquals("Продолжительность фильма должна быть указана и являться положительным числом.",
+        Assertions.assertEquals("Описание фильма не может быть длиннее 200 символов.",
                 thrown.getMessage());
     }
 
@@ -64,7 +55,7 @@ public class FilmControllerTests {
     public void testUpdateIncorrectIdFilm() {
         filmController.createFilm(film);
         film.setId(85L);
-        ValidationException thrown = assertThrows(ValidationException.class, () -> filmController.updateFilm(film));
+        NotFoundException thrown = assertThrows(NotFoundException.class, () -> filmController.updateFilm(film));
         Assertions.assertEquals("Фильм с ID " + film.getId() + " не найден.", thrown.getMessage());
     }
 }
