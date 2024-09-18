@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,9 +23,12 @@ public class User {
     private String name;
     @PastOrPresent(message = "Дата рождения должна быть указана и не может быть в будущем.")
     private LocalDate birthday;
-    private Set<Long> friends = new HashSet<>();
+    private Set<Long> friends;
 
     public void addFriend(Long id) {
+        if (friends == null) {
+            this.friends = new HashSet<>(Collections.singletonList(id));
+        }
         friends.add(id);
     }
 

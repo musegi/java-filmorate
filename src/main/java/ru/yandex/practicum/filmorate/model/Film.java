@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,9 +25,12 @@ public class Film {
     @NotNull(message = "Продолжительность фильма должна быть указана.")
     @Positive(message = "Продолжительность фильма должна являться положительным числом.")
     private Integer duration;
-    private Set<Long> likes = new HashSet<>();
+    private Set<Long> likes;
 
     public void addLike(Long id) {
+        if (likes == null) {
+            this.likes = new HashSet<>(Collections.singletonList(id));
+        }
         likes.add(id);
     }
 
