@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -91,6 +92,9 @@ public class UserService {
     public List<User> allFriends(Long id) {
         userContainCheck(id);
         User user = userStorage.getUser(id);
+        if (user.getFriends() == null) {
+            return new ArrayList<>();
+        }
         Set<Long> userFriends = user.getFriends();
         log.info("Список друзей {}", userFriends);
 
