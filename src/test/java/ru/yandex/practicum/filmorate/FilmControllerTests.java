@@ -13,7 +13,6 @@ import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -29,7 +28,7 @@ public class FilmControllerTests {
         filmController = new FilmController(filmService);
         film = new Film(null, "Исходный код", "Солдат по имени Коултер мистическим образом " +
                 "оказывается в теле неизвестного мужчины, погибшего в железнодорожной катастрофе.",
-                LocalDate.of(2011, 3, 31), 93, Collections.emptySet());
+                LocalDate.of(2011, 3, 31), 93);
     }
 
     @Test

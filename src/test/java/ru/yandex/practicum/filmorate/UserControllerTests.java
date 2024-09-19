@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -26,7 +25,7 @@ public class UserControllerTests {
     public void init() {
         userController = new UserController(userService);
         user = new User(null, "test.email@gmail.com", "gospodi", null,
-                LocalDate.of(1980, 6, 13), Collections.emptySet());
+                LocalDate.of(1980, 6, 13));
     }
 
     @Test
