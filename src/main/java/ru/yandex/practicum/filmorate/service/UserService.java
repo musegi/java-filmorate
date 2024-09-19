@@ -79,13 +79,13 @@ public class UserService {
         userContainCheck(friendId);
         User user = userStorage.getUser(id);
         User userFriend = userStorage.getUser(friendId);
-        if (!user.getFriends().contains(friendId)) {
-            log.error("Пользователи не друзья.");
-            throw new NotFoundException("Пользователи не являются друзьями.");
+        if (user.getFriends().contains(friendId) || userFriend.getFriends().contains(id)) {
+            userFriend.removeFriend(id);
+            user.removeFriend(friendId);
+            log.info("Пользователь {} и {} больше не друзья.", user.getId(), userFriend.getId());
+            return user;
         }
-        userFriend.removeFriend(id);
-        user.removeFriend(friendId);
-        log.info("Пользователь {} и {} больше не друзья.", user.getId(), userFriend.getId());
+        log.info("Пользователи не были друзьями.");
         return user;
     }
 
