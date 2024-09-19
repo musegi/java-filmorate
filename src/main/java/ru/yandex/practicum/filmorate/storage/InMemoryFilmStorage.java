@@ -8,7 +8,7 @@ import java.util.*;
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> films = new HashMap<>();
-    private Long idCounter;
+    private Long idCounter = 0L;
 
     @Override
     public void putFilm(Long id, Film film) {

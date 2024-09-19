@@ -8,7 +8,7 @@ import java.util.*;
 @Component
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Long, User> users = new HashMap<>();
-    private Long idCounter;
+    private Long idCounter = 0L;
 
     @Override
     public void putUser(Long id, User user) {
