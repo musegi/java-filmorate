@@ -8,6 +8,7 @@ import java.util.*;
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> films = new HashMap<>();
+    private Long idCounter;
 
     @Override
     public void putFilm(Long id, Film film) {
@@ -32,5 +33,10 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public boolean containsFilmId(Long id) {
         return films.containsKey(id);
+    }
+
+    @Override
+    public Long nextId() {
+        return ++this.idCounter;
     }
 }

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
-    private final InMemoryUserStorage userStorage;
+    private final UserStorage userStorage;
 
     public User getUser(Long id) {
         userContainCheck(id);
@@ -32,7 +32,7 @@ public class UserService {
     public User createUser(User user) {
         userLoginPatternCheck(user);
         User userChecked = userNameCheck(user);
-        userChecked.setId(getNextId());
+        userChecked.setId(userStorage.nextId());
         log.debug("Пользователю присвоен ID{}.", userChecked.getId());
         userStorage.putUser(userChecked.getId(), userChecked);
         log.info("Создан новый пользователь.");
@@ -138,14 +138,5 @@ public class UserService {
             user.setName(user.getLogin());
         }
         return user;
-    }
-
-    private long getNextId() {
-        long currentMaxId = userStorage.getUsersId()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
     }
 }

@@ -8,6 +8,7 @@ import java.util.*;
 @Component
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Long, User> users = new HashMap<>();
+    private Long idCounter;
 
     @Override
     public void putUser(Long id, User user) {
@@ -32,5 +33,10 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public boolean containsUserId(Long id) {
         return users.containsKey(id);
+    }
+
+    @Override
+    public Long nextId() {
+        return ++this.idCounter;
     }
 }

@@ -15,4 +15,6 @@ public interface FilmStorage {
     Film getFilm(Long id);
 
     boolean containsFilmId(Long id);
+
+    Long nextId();
 }

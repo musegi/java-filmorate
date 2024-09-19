@@ -15,4 +15,6 @@ public interface UserStorage {
     User getUser(Long id);
 
     boolean containsUserId(Long id);
+
+    Long nextId();
 }

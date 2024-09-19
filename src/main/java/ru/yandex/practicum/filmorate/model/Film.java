@@ -12,10 +12,8 @@ import java.util.Set;
 @AllArgsConstructor
 public class Film {
     private Long id;
-    @NotEmpty(message = "Название фильма должно быть указано.")
     @NotBlank(message = "Название фильма должно быть указано.")
     private String name;
-    @NotEmpty(message = "Описание фильма должно быть указано.")
     @NotBlank(message = "Описание фильма должно быть указано.")
     @Size(max = 200, message = "Описание фильма не может быть длиннее 200 символов.")
     private String description;

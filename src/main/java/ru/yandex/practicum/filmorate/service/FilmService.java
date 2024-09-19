@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class FilmService {
-    private final InMemoryFilmStorage filmStorage;
-    private final InMemoryUserStorage userStorage;
+    private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
 
     public Film getFilm(Long id) {
         filmContainCheck(id);
@@ -32,7 +32,7 @@ public class FilmService {
 
     public Film createFilm(Film film) {
         filmReleaseDateCheck(film);
-        film.setId(getNextId());
+        film.setId(filmStorage.nextId());
         log.debug("Фильму присвоен ID{}.", film.getId());
         filmStorage.putFilm(film.getId(), film);
         log.info("Создан новый фильм.");
@@ -113,12 +113,4 @@ public class FilmService {
         }
     }
 
-    private long getNextId() {
-        long currentMaxId = filmStorage.getFilmsId()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
-    }
 }

@@ -12,11 +12,9 @@ import java.util.Set;
 @AllArgsConstructor
 public class User {
     private Long id;
-    @NotEmpty(message = "Email должен быть указан.")
     @NotBlank(message = "Email должен быть указан.")
     @Email(message = "Укажите корректный Email.")
     private String email;
-    @NotEmpty(message = "Логин должен быть указан.")
     @NotBlank(message = "Логин должен быть указан.")
     private String login;
     private String name;
