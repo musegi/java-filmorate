@@ -1,104 +1,63 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-@Slf4j
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
+@Slf4j
 public class UserController {
+    private final UserService userService;
 
-    Map<Long, User> users = new HashMap<>();
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable Long id) {
+        return userService.getUser(id);
+    }
 
     @GetMapping
     public Collection<User> getUsers() {
-        return new ArrayList<>(users.values());
+        return userService.getUsers();
     }
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        if (user.getEmail() == null || user.getEmail().isBlank() || !(user.getEmail().contains("@"))) {
-            log.error("Электронная почта недействительна или не была указана.");
-            throw new ValidationException("Электронная почта не может быть пустой и должна содержать символ @.");
-        } else if (user.getLogin() == null || user.getLogin().isBlank() || (user.getLogin().contains(" "))) {
-            log.error("Логин содержит пробелы или не был указан.");
-            throw new ValidationException("Логин не может быть пустым или содержать пробелы.");
-        } else if (user.getBirthday() == null || user.getBirthday().isAfter(LocalDate.ofInstant(Instant.now(),
-                ZoneId.of("UTC")))) {
-            log.error("Дата рождения неверная или не была указана.");
-            throw new ValidationException("Дата рождения должна быть указана и не может быть в будущем.");
-        }
-        if (user.getName() == null || user.getName().isBlank()) {
-            log.info("Имя пользователя не было указано");
-            user.setName(user.getLogin());
-        }
-        user.setId(getNextId());
-        log.debug("Пользователю присвоен ID{}.", user.getId());
-        users.put(user.getId(), user);
-        log.info("Создан новый пользователь.");
-        return user;
+        return userService.createUser(user);
     }
 
     @PutMapping
-    public User update(@Valid @RequestBody User newUserInfo) {
-        if (newUserInfo.getId() == null) {
-            log.error("Не указан ID пользователя.");
-            throw new ValidationException("Не указан ID пользователя");
-        }
-        if (!users.containsKey(newUserInfo.getId())) {
-            log.error("Не найден пользовать с ID{}", newUserInfo.getId());
-            throw new ValidationException("Пользователь с ID " + newUserInfo.getId() + " не найден.");
-        }
-        User oldUserInfo = users.get(newUserInfo.getId());
-        if (newUserInfo.getEmail() != null) {
-            if (!(newUserInfo.getEmail().contains("@"))) {
-                log.error("Электронная почта недействительна.");
-                throw new ValidationException("Электронная почта должна содержать символ @");
-            } else {
-                log.info("Новый имейл присвоен.");
-                oldUserInfo.setEmail(newUserInfo.getEmail());
-            }
-        }
-        if (newUserInfo.getName() != null) {
-            log.info("Новое имя присвоено.");
-            oldUserInfo.setName(newUserInfo.getName());
-        }
-        if (newUserInfo.getLogin() != null) {
-            if (newUserInfo.getLogin().contains(" ")) {
-                log.error("Новый логин содержит пробелы.");
-                throw new ValidationException("Логин не может содержать пробелы.");
-            }
-            log.info("Новый логин присвоен.");
-            oldUserInfo.setLogin(newUserInfo.getLogin());
-        }
-        if (newUserInfo.getBirthday() != null) {
-            if (newUserInfo.getBirthday().isAfter(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")))) {
-                log.error("Указана неверная новая дата рождения.");
-                throw new ValidationException("Дата рождения не может быть в будущем.");
-            }
-            log.info("Новая дата рождения присвоена.");
-            oldUserInfo.setBirthday(newUserInfo.getBirthday());
-        }
-        return oldUserInfo;
+    public User update(@Valid @RequestBody User newUser) {
+        return userService.updateUser(newUser);
     }
 
-    private long getNextId() {
-        long currentMaxId = users.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+    @PutMapping("/{id}/friends/{friendId}")
+    public User addFriends(
+            @PathVariable Long id,
+            @PathVariable Long friendId) {
+        return userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public User deleteFriend(@PathVariable Long id,
+                             @PathVariable Long friendId) {
+        return userService.removeFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> allFriends(@PathVariable Long id) {
+        return userService.allFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> allMutualFriends(@PathVariable Long id,
+                                       @PathVariable Long otherId) {
+        return userService.allMutualFriends(id, otherId);
     }
 }
