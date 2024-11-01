@@ -1,7 +1,7 @@
 # java-filmorate
 
 ## Структура базы данных:
-![БД filmorate](https://i.ibb.co/c6wkKtp/Untitled.png)
+![БД filmorate](https://i.ibb.co/NyfLY1M/Untitled.png)
 
 * **films** - содержит основную информацию о фильмах;
 * **users** - содержит основную информацию о пользователях;
