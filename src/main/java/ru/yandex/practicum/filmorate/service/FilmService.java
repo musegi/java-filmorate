@@ -54,7 +54,8 @@ public class FilmService {
         filmContainCheck(film.getId());
         if (!mpaStorage.containsMpa(film.getMpa().getId())) {
             throw new ValidationException("Не существует МПА рейтинг с ID: " + film.getMpa().getId());
-        }        if (film.getGenres() != null) {
+        }
+        if (film.getGenres() != null) {
             genreValidCheck(film);
         }
         filmReleaseDateCheck(film);
