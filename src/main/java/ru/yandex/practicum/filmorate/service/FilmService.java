@@ -6,13 +6,10 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.*;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +17,10 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final LikeStorage likeStorage;
+    private final GenreStorage genreStorage;
+    private final MpaStorage mpaStorage;
+    private Long idCounter = 0L;
 
     public Film getFilm(Long id) {
         filmContainCheck(id);
@@ -32,64 +33,52 @@ public class FilmService {
 
     public Film createFilm(Film film) {
         filmReleaseDateCheck(film);
-        film.setId(filmStorage.nextId());
+        if (!mpaStorage.containsMpa(film.getMpa().getId())) {
+            throw new ValidationException("Не существует МПА рейтинг с ID: " + film.getMpa().getId());
+        }
+        if (film.getGenres() != null) {
+            genreValidCheck(film);
+        }
+        film.setId(nextId());
         log.debug("Фильму присвоен ID{}.", film.getId());
-        filmStorage.putFilm(film.getId(), film);
+        filmStorage.putFilm(film);
         log.info("Создан новый фильм.");
         return film;
     }
 
-    public Film updateFilm(Film newFilm) {
-        if (newFilm.getId() == null) {
+    public Film updateFilm(Film film) {
+        if (film.getId() == null) {
             log.error("Не указан ID фильма.");
             throw new ValidationException("Не указан ID фильма");
         }
-        filmContainCheck(newFilm.getId());
-        Film oldFilm = filmStorage.getFilm(newFilm.getId());
-        filmReleaseDateCheck(newFilm);
-        if (!newFilm.getName().equals(oldFilm.getName())) {
-            oldFilm.setName(newFilm.getName());
-            log.info("Новое название фильма присвоено.");
+        filmContainCheck(film.getId());
+        if (!mpaStorage.containsMpa(film.getMpa().getId())) {
+            throw new ValidationException("Не существует МПА рейтинг с ID: " + film.getMpa().getId());
         }
-        if (!newFilm.getDescription().equals(oldFilm.getDescription())) {
-            oldFilm.setDescription(newFilm.getDescription());
-            log.info("Новое описание фильма присвоено.");
+        if (film.getGenres() != null) {
+            genreValidCheck(film);
         }
-        if (!newFilm.getDuration().equals(oldFilm.getDuration())) {
-            oldFilm.setDuration(newFilm.getDuration());
-            log.info("Новая продолжительность фильма присвоена.");
-        }
-        if (!newFilm.getReleaseDate().equals(oldFilm.getReleaseDate())) {
-            oldFilm.setReleaseDate(newFilm.getReleaseDate());
-            log.info("Новая дата релиза фильма присвоена.");
-        }
-        return oldFilm;
+        filmReleaseDateCheck(film);
+        filmStorage.updateFilm(film);
+        return film;
     }
 
-    public Film addLike(Long id, Long userId) {
-        filmContainCheck(id);
+    public void addLike(Long userId, Long filmId) {
+        filmContainCheck(filmId);
         userContainCheck(userId);
-        Film film = filmStorage.getFilm(id);
-        film.addLike(userId);
+        likeStorage.addLike(userId, filmId);
         log.info("Лайк от пользователя {} добавлен", userId);
-        return film;
     }
 
-    public Film removeLike(Long id, Long userId) {
-        filmContainCheck(id);
+    public void removeLike(Long userId, Long filmId) {
+        filmContainCheck(filmId);
         userContainCheck(userId);
-        Film film = filmStorage.getFilm(id);
-        film.removeLike(userId);
+        likeStorage.removeLike(userId, filmId);
         log.info("Лайк от пользователя {} убран", userId);
-        return film;
     }
 
     public List<Film> getPopularFilms(int count) {
-        return filmStorage.getFilms().stream()
-                .filter(film -> film.getLikes() != null)
-                .sorted((f1, f2) -> Integer.compare(f2.getLikes().size(), f1.getLikes().size()))
-                .limit(count)
-                .collect(Collectors.toList());
+        return filmStorage.getMostPopular(count);
     }
 
     private void filmReleaseDateCheck(Film film) {
@@ -106,6 +95,12 @@ public class FilmService {
         }
     }
 
+    private void genreValidCheck(Film film) {
+        if (!genreStorage.containsGenre(film.getGenres())) {
+            throw new ValidationException("Не существует такого жанра");
+        }
+    }
+
     private void userContainCheck(Long userId) {
         if (!userStorage.containsUserId(userId)) {
             log.error("Не найден пользователь с ID{}", userId);
@@ -113,4 +108,7 @@ public class FilmService {
         }
     }
 
+    private Long nextId() {
+        return ++this.idCounter;
+    }
 }
